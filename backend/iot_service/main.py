@@ -73,18 +73,22 @@ async def register_sensor(
     db.commit()
     db.refresh(new_sensor)
 
-    # Also save to Firestore for quick access
-    firestore_db.collection('sensors').document(sensor.sensor_id).set({
-        'sensor_id': sensor.sensor_id,
-        'name': sensor.name,
-        'latitude': sensor.latitude,
-        'longitude': sensor.longitude,
-        'location_description': sensor.location_description,
-        'sensor_type': sensor.sensor_type,
-        'status': 'active',
-        'registered_at': datetime.utcnow(),
-        'metadata': sensor.metadata or {}
-    })
+    # Also save to Firestore for quick access (if available)
+    if firestore_db:
+        try:
+            firestore_db.collection('sensors').document(sensor.sensor_id).set({
+                'sensor_id': sensor.sensor_id,
+                'name': sensor.name,
+                'latitude': sensor.latitude,
+                'longitude': sensor.longitude,
+                'location_description': sensor.location_description,
+                'sensor_type': sensor.sensor_type,
+                'status': 'active',
+                'registered_at': datetime.utcnow(),
+                'metadata': sensor.metadata or {}
+            })
+        except Exception as e:
+            print(f"⚠️  Firestore update failed (non-critical): {e}")
 
     return {"message": "Sensor registered successfully", "sensor_id": sensor.sensor_id}
 
@@ -130,23 +134,27 @@ async def ingest_sensor_data(
     db.commit()
     db.refresh(reading)
 
-    # Store latest reading in Firestore for real-time access
-    firestore_db.collection('latest_readings').document(data.sensor_id).set({
-        'sensor_id': data.sensor_id,
-        'timestamp': reading.timestamp,
-        'latitude': data.latitude,
-        'longitude': data.longitude,
-        'pm25': data.pm25,
-        'pm10': data.pm10,
-        'no2': data.no2,
-        'co': data.co,
-        'o3': data.o3,
-        'so2': data.so2,
-        'temperature': data.temperature,
-        'humidity': data.humidity,
-        'pressure': data.pressure,
-        'metadata': data.metadata or {}
-    })
+    # Store latest reading in Firestore for real-time access (if available)
+    if firestore_db:
+        try:
+            firestore_db.collection('latest_readings').document(data.sensor_id).set({
+                'sensor_id': data.sensor_id,
+                'timestamp': reading.timestamp,
+                'latitude': data.latitude,
+                'longitude': data.longitude,
+                'pm25': data.pm25,
+                'pm10': data.pm10,
+                'no2': data.no2,
+                'co': data.co,
+                'o3': data.o3,
+                'so2': data.so2,
+                'temperature': data.temperature,
+                'humidity': data.humidity,
+                'pressure': data.pressure,
+                'metadata': data.metadata or {}
+            })
+        except Exception as e:
+            print(f"⚠️  Firestore update failed (non-critical): {e}")
 
     return {
         "message": "Data ingested successfully",

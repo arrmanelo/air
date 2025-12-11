@@ -141,20 +141,24 @@ async def create_alert(
     db.commit()
     db.refresh(new_alert)
 
-    # Store in Firestore for real-time updates
-    firestore_db.collection('alerts').document(str(new_alert.id)).set({
-        'alert_id': new_alert.id,
-        'timestamp': new_alert.timestamp,
-        'alert_type': alert.alert_type,
-        'severity': alert.severity,
-        'pollutant': alert.pollutant,
-        'value': alert.value,
-        'latitude': alert.latitude,
-        'longitude': alert.longitude,
-        'area': alert.area,
-        'message': alert.message,
-        'resolved': False
-    })
+    # Store in Firestore for real-time updates (if available)
+    if firestore_db:
+        try:
+            firestore_db.collection('alerts').document(str(new_alert.id)).set({
+                'alert_id': new_alert.id,
+                'timestamp': new_alert.timestamp,
+                'alert_type': alert.alert_type,
+                'severity': alert.severity,
+                'pollutant': alert.pollutant,
+                'value': alert.value,
+                'latitude': alert.latitude,
+                'longitude': alert.longitude,
+                'area': alert.area,
+                'message': alert.message,
+                'resolved': False
+            })
+        except Exception as e:
+            print(f"⚠️  Firestore update failed (non-critical): {e}")
 
     # Send notifications in background
     background_tasks.add_task(send_notifications, new_alert)
@@ -220,11 +224,15 @@ async def resolve_alert(
     alert.resolved = 1
     db.commit()
 
-    # Update Firestore
-    firestore_db.collection('alerts').document(str(alert_id)).update({
-        'resolved': True,
-        'resolved_at': datetime.utcnow()
-    })
+    # Update Firestore (if available)
+    if firestore_db:
+        try:
+            firestore_db.collection('alerts').document(str(alert_id)).update({
+                'resolved': True,
+                'resolved_at': datetime.utcnow()
+            })
+        except Exception as e:
+            print(f"⚠️  Firestore update failed (non-critical): {e}")
 
     return {"message": "Alert resolved successfully"}
 
@@ -359,15 +367,19 @@ async def send_notifications(alert: Alert):
     # - Telegram Bot API
     # - City emergency broadcast system
 
-    # Example: Store in Firestore for web/mobile apps
-    firestore_db.collection('notifications').add({
-        'alert_id': alert.id,
-        'timestamp': datetime.utcnow(),
-        'severity': alert.severity,
-        'message': alert.message,
-        'area': alert.area,
-        'sent': True
-    })
+    # Example: Store in Firestore for web/mobile apps (if available)
+    if firestore_db:
+        try:
+            firestore_db.collection('notifications').add({
+                'alert_id': alert.id,
+                'timestamp': datetime.utcnow(),
+                'severity': alert.severity,
+                'message': alert.message,
+                'area': alert.area,
+                'sent': True
+            })
+        except Exception as e:
+            print(f"⚠️  Firestore notification failed (non-critical): {e}")
 
 
 if __name__ == "__main__":
