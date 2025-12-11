@@ -99,20 +99,13 @@
         </div>
 
         <!-- Social Login Buttons -->
-        <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="mb-6">
           <button
             @click="handleGoogleLogin"
-            class="btn-hover py-3 glass border border-gray-200 rounded-2xl font-semibold flex items-center justify-center space-x-2"
+            class="w-full btn-hover py-3 glass border border-gray-200 rounded-2xl font-semibold flex items-center justify-center space-x-2"
           >
             <span>🔍</span>
-            <span>Google</span>
-          </button>
-          <button
-            @click="handleGithubLogin"
-            class="btn-hover py-3 glass border border-gray-200 rounded-2xl font-semibold flex items-center justify-center space-x-2"
-          >
-            <span>⚫</span>
-            <span>GitHub</span>
+            <span>Continue with Google</span>
           </button>
         </div>
 
@@ -136,10 +129,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuth } from '~/composables/useAuth'
 
 const router = useRouter()
+const auth = useAuth()
 
 // State
 const email = ref('')
@@ -148,73 +143,23 @@ const rememberMe = ref(false)
 const loading = ref(false)
 const errorMessage = ref('')
 
-// Firebase auth instance (will be initialized if Firebase is available)
-let auth = null
-
-// Initialize Firebase Auth
-const initFirebase = async () => {
-  try {
-    const { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider } = await import('firebase/auth')
-    const { initializeApp, getApps } = await import('firebase/app')
-
-    const config = useRuntimeConfig()
-
-    // Initialize Firebase if not already initialized
-    if (getApps().length === 0) {
-      const firebaseConfig = {
-        apiKey: config.public.firebaseApiKey,
-        authDomain: config.public.firebaseAuthDomain,
-        projectId: config.public.firebaseProjectId,
-        storageBucket: config.public.firebaseStorageBucket,
-        messagingSenderId: config.public.firebaseMessagingSenderId,
-        appId: config.public.firebaseAppId
-      }
-      initializeApp(firebaseConfig)
-    }
-
-    auth = getAuth()
-    return true
-  } catch (error) {
-    console.error('Firebase not available:', error)
-    return false
+// Check if already authenticated
+onMounted(async () => {
+  auth.initAuth()
+  if (auth.isAuthenticated.value) {
+    router.push('/dashboard')
   }
-}
+})
 
-// Handle email/password login
+// Handle email/password login (disabled for now, using Google OAuth only)
 const handleLogin = async () => {
   errorMessage.value = ''
   loading.value = true
 
   try {
-    // Initialize Firebase
-    const firebaseAvailable = await initFirebase()
-
-    if (!firebaseAvailable) {
-      // Fallback: Direct navigation without authentication
-      console.warn('Firebase not configured, skipping authentication')
-      router.push('/dashboard')
-      return
-    }
-
-    const { signInWithEmailAndPassword } = await import('firebase/auth')
-
-    // Sign in with Firebase
-    const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value)
-    const user = userCredential.user
-
-    // Get ID token
-    const idToken = await user.getIdToken()
-
-    // Store token
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('authToken', idToken)
-      if (rememberMe.value) {
-        localStorage.setItem('userEmail', email.value)
-      }
-    }
-
-    // Redirect to dashboard
-    router.push('/dashboard')
+    // For now, redirect to Google login
+    errorMessage.value = 'Please use Google Sign-In to continue'
+    loading.value = false
   } catch (error) {
     console.error('Login error:', error)
     errorMessage.value = error.message || 'Invalid email or password. Please try again.'
@@ -224,69 +169,8 @@ const handleLogin = async () => {
 }
 
 // Handle Google login
-const handleGoogleLogin = async () => {
-  errorMessage.value = ''
-  loading.value = true
-
-  try {
-    const firebaseAvailable = await initFirebase()
-    if (!firebaseAvailable) {
-      errorMessage.value = 'Google Sign-In requires Firebase configuration'
-      loading.value = false
-      return
-    }
-
-    const { signInWithPopup, GoogleAuthProvider } = await import('firebase/auth')
-    const provider = new GoogleAuthProvider()
-
-    const result = await signInWithPopup(auth, provider)
-    const user = result.user
-    const idToken = await user.getIdToken()
-
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('authToken', idToken)
-    }
-
-    router.push('/dashboard')
-  } catch (error) {
-    console.error('Google login error:', error)
-    errorMessage.value = error.message || 'Google Sign-In failed. Please try again.'
-  } finally {
-    loading.value = false
-  }
-}
-
-// Handle GitHub login
-const handleGithubLogin = async () => {
-  errorMessage.value = ''
-  loading.value = true
-
-  try {
-    const firebaseAvailable = await initFirebase()
-    if (!firebaseAvailable) {
-      errorMessage.value = 'GitHub Sign-In requires Firebase configuration'
-      loading.value = false
-      return
-    }
-
-    const { signInWithPopup, GithubAuthProvider } = await import('firebase/auth')
-    const provider = new GithubAuthProvider()
-
-    const result = await signInWithPopup(auth, provider)
-    const user = result.user
-    const idToken = await user.getIdToken()
-
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('authToken', idToken)
-    }
-
-    router.push('/dashboard')
-  } catch (error) {
-    console.error('GitHub login error:', error)
-    errorMessage.value = error.message || 'GitHub Sign-In failed. Please try again.'
-  } finally {
-    loading.value = false
-  }
+const handleGoogleLogin = () => {
+  auth.loginWithGoogle()
 }
 
 // Load remembered email

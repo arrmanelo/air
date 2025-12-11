@@ -76,6 +76,22 @@ class Alert(Base):
     extra_data = Column(JSON)  # Additional metadata (renamed from 'metadata' - reserved word)
 
 
+class User(Base):
+    """Users table for authentication"""
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    name = Column(String, nullable=False)
+    profile_picture = Column(String)
+    google_id = Column(String, unique=True, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    last_login = Column(DateTime, default=datetime.utcnow)
+    is_active = Column(Integer, default=1)  # 1 = active, 0 = inactive
+    role = Column(String, default="user")  # user, admin, moderator
+    extra_data = Column(JSON)  # Additional user metadata
+
+
 def get_db():
     """Dependency for FastAPI"""
     db = SessionLocal()

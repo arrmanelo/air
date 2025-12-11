@@ -98,6 +98,34 @@ services:
       - eco_network
     restart: unless-stopped
 
+  # Auth Service (Port 8004)
+  auth_service:
+    build:
+      context: ./backend/auth_service
+      dockerfile: Dockerfile
+    container_name: eco_auth_service
+    environment:
+      POSTGRES_USER: eco_monitor
+      POSTGRES_PASSWORD: eco_pass
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: environmental_monitoring
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-this-secret-key-in-production}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      FRONTEND_URL: http://localhost:3000
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+    ports:
+      - "8004:8004"
+    volumes:
+      - ./backend/shared:/app/shared
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - eco_network
+    restart: unless-stopped
+
   # Frontend (Port 3000)
   frontend:
     build:
@@ -108,12 +136,14 @@ services:
       NUXT_PUBLIC_IOT_API_URL: http://localhost:8001
       NUXT_PUBLIC_ANALYTICS_API_URL: http://localhost:8002
       NUXT_PUBLIC_ALERT_API_URL: http://localhost:8003
+      NUXT_PUBLIC_AUTH_API_URL: http://localhost:8004
     ports:
       - "3000:3000"
     depends_on:
       - iot_service
       - analytics_service
       - alert_service
+      - auth_service
     networks:
       - eco_network
     restart: unless-stopped
