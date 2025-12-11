@@ -7,15 +7,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      // Firebase
-      firebaseApiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY,
-      firebaseAuthDomain: process.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-      firebaseProjectId: process.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID,
-      firebaseStorageBucket: process.env.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-      firebaseMessagingSenderId: process.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-      firebaseAppId: process.env.NUXT_PUBLIC_FIREBASE_APP_ID,
-
       // API Endpoints
+      authApiUrl: process.env.NUXT_PUBLIC_AUTH_API_URL || 'http://localhost:8004',
       iotApiUrl: process.env.NUXT_PUBLIC_IOT_API_URL || 'http://localhost:8001',
       analyticsApiUrl: process.env.NUXT_PUBLIC_ANALYTICS_API_URL || 'http://localhost:8002',
       alertApiUrl: process.env.NUXT_PUBLIC_ALERT_API_URL || 'http://localhost:8003'
