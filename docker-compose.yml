@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database with TimescaleDB
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    container_name: eco_postgres
+    environment:
+      POSTGRES_USER: eco_monitor
+      POSTGRES_PASSWORD: eco_pass
+      POSTGRES_DB: environmental_monitoring
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eco_monitor"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - eco_network
+
+  # IoT Service (Port 8001)
+  iot_service:
+    build:
+      context: ./backend/iot_service
+      dockerfile: Dockerfile
+    container_name: eco_iot_service
+    environment:
+      POSTGRES_USER: eco_monitor
+      POSTGRES_PASSWORD: eco_pass
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: environmental_monitoring
+      FIREBASE_CREDENTIALS: /app/firebase-credentials.json
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./backend/shared:/app/shared
+      - ./firebase-credentials.json:/app/firebase-credentials.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - eco_network
+    restart: unless-stopped
+
+  # Analytics Service (Port 8002)
+  analytics_service:
+    build:
+      context: ./backend/analytics_service
+      dockerfile: Dockerfile
+    container_name: eco_analytics_service
+    environment:
+      POSTGRES_USER: eco_monitor
+      POSTGRES_PASSWORD: eco_pass
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: environmental_monitoring
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./backend/shared:/app/shared
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - eco_network
+    restart: unless-stopped
+
+  # Alert Service (Port 8003)
+  alert_service:
+    build:
+      context: ./backend/alert_service
+      dockerfile: Dockerfile
+    container_name: eco_alert_service
+    environment:
+      POSTGRES_USER: eco_monitor
+      POSTGRES_PASSWORD: eco_pass
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: environmental_monitoring
+      FIREBASE_CREDENTIALS: /app/firebase-credentials.json
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./backend/shared:/app/shared
+      - ./firebase-credentials.json:/app/firebase-credentials.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - eco_network
+    restart: unless-stopped
+
+  # Frontend (Port 3000)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: eco_frontend
+    environment:
+      NUXT_PUBLIC_IOT_API_URL: http://localhost:8001
+      NUXT_PUBLIC_ANALYTICS_API_URL: http://localhost:8002
+      NUXT_PUBLIC_ALERT_API_URL: http://localhost:8003
+    ports:
+      - "3000:3000"
+    depends_on:
+      - iot_service
+      - analytics_service
+      - alert_service
+    networks:
+      - eco_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  eco_network:
+    driver: bridge
