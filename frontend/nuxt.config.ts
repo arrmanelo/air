@@ -12,9 +12,14 @@ export default defineNuxtConfig({
       { code: 'kz', name: 'Қазақша', file: 'kz.json' }
     ],
     lazy: true,
+
+    // ТВОЯ ПРАВИЛЬНАЯ ПАПКА — "locales/"
+    // Именно она есть в проекте (см. твой скрин), поэтому ставим:
     langDir: 'locales/',
+
     defaultLocale: 'ru',
     strategy: 'no_prefix',
+
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'i18n_locale',
@@ -25,7 +30,6 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      // API Endpoints
       authApiUrl: process.env.NUXT_PUBLIC_AUTH_API_URL || 'http://localhost:8004',
       iotApiUrl: process.env.NUXT_PUBLIC_IOT_API_URL || 'http://localhost:8001',
       analyticsApiUrl: process.env.NUXT_PUBLIC_ANALYTICS_API_URL || 'http://localhost:8002',

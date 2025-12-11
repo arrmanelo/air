@@ -12,19 +12,20 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxtjs/i18n": "^10.2.1",
     "@nuxtjs/tailwindcss": "^6.10.1",
-    "leaflet": "^1.9.4",
+    "@vueuse/core": "^10.7.0",
+    "aos": "^2.3.4",
     "chart.js": "^4.4.1",
     "firebase": "^10.7.1",
+    "leaflet": "^1.9.4",
     "nuxt": "^3.9.0",
     "vue": "^3.3.11",
-    "vue-router": "^4.2.5",
-    "@vueuse/core": "^10.7.0",
-    "aos": "^2.3.4"
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
-    "@types/leaflet": "^1.9.8",
     "@types/aos": "^3.0.7",
+    "@types/leaflet": "^1.9.8",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.4.0"
