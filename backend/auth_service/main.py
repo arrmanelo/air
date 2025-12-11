@@ -17,6 +17,7 @@ from authlib.integrations.starlette_client import OAuth
 from starlette.config import Config
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
+from starlette.middleware.sessions import SessionMiddleware
 
 # Add parent directory to path for shared modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -47,7 +48,17 @@ oauth.register(
 
 app = FastAPI(title="Weimea Auth Service", version="1.0.0")
 
-# CORS
+# IMPORTANT: Add SessionMiddleware BEFORE CORS
+# This is required for OAuth to work
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=SECRET_KEY,
+    max_age=3600,  # 1 hour
+    same_site="lax",
+    https_only=False  # Set to True in production with HTTPS
+)
+
+# CORS - must be added AFTER SessionMiddleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
