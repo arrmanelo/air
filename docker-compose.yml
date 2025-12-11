@@ -124,6 +124,31 @@ services:
       - eco_network
     restart: unless-stopped
 
+  # Chat Assistant Service (Port 8005)
+  chat_service:
+    build:
+      context: ./backend/chat_service
+      dockerfile: Dockerfile
+    container_name: eco_chat_service
+    environment:
+      POSTGRES_USER: eco_monitor
+      POSTGRES_PASSWORD: eco_pass
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: environmental_monitoring
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080"
+    ports:
+      - "8005:8005"
+    volumes:
+      - ./backend/shared:/app/shared
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - eco_network
+    restart: unless-stopped
+
   # Frontend (Port 3000)
   frontend:
     build:
@@ -135,6 +160,7 @@ services:
       NUXT_PUBLIC_ANALYTICS_API_URL: http://localhost:8002
       NUXT_PUBLIC_ALERT_API_URL: http://localhost:8003
       NUXT_PUBLIC_AUTH_API_URL: http://localhost:8004
+      NUXT_PUBLIC_CHAT_API_URL: http://localhost:8005
     ports:
       - "3000:3000"
     depends_on:
@@ -142,6 +168,7 @@ services:
       - analytics_service
       - alert_service
       - auth_service
+      - chat_service
     networks:
       - eco_network
     restart: unless-stopped
