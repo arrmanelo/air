@@ -1,0 +1,57 @@
+{
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "about": "About",
+    "dashboard": "Dashboard",
+    "login": "Login",
+    "logout": "Logout",
+    "profile": "Profile"
+  },
+  "hero": {
+    "title": "Real-time Air Quality",
+    "subtitle": "Monitoring",
+    "description": "Track air quality in your neighborhood with AI-powered analytics",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More"
+  },
+  "features": {
+    "title": "Why EcoMonitor?",
+    "subtitle": "Everything you need for environmental monitoring",
+    "hyperlocal": {
+      "title": "Hyperlocal Data",
+      "description": "Get pollution data specific to your neighborhood. Know exactly what you're breathing."
+    },
+    "ai": {
+      "title": "AI Predictions",
+      "description": "Gemini AI predicts pollution spikes before they happen. Stay ahead of the curve."
+    },
+    "alerts": {
+      "title": "Instant Alerts",
+      "description": "Receive real-time notifications when air quality drops. Protect your health."
+    }
+  },
+  "auth": {
+    "welcomeBack": "Welcome back",
+    "signInAccess": "Sign in to access your dashboard",
+    "email": "Email",
+    "password": "Password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signIn": "Sign In",
+    "continueWith": "Or continue with",
+    "continueGoogle": "Continue with Google",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "backHome": "Back to home"
+  },
+  "chat": {
+    "title": "EcoGuide",
+    "subtitle": "Virtual eco-assistant",
+    "placeholder": "Ask about air quality...",
+    "hello": "Hello! I'm EcoGuide",
+    "askMe": "Ask me about air quality in your area!",
+    "examples": "Example questions:",
+    "send": "Send"
+  }
+}
