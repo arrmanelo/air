@@ -9,11 +9,11 @@ RUN apt-get update && apt-get install -y \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy package files
-COPY package*.json ./
+# Copy package file (without lock to avoid npm bug with optional deps)
+COPY package.json ./
 
-# Install dependencies
-RUN npm install --legacy-peer-deps
+# Install dependencies with clean cache
+RUN npm install --legacy-peer-deps --no-package-lock
 
 # Copy application code
 COPY . .
