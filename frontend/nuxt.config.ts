@@ -41,10 +41,10 @@ export default defineNuxtConfig({
     head: {
       title: 'EcoMonitor Pavlodar - Smart Environmental Monitoring',
       meta: [
-        { charset: 'utf-8' },
-        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { hid: 'description', name: 'description', content: 'Real-time environmental monitoring for Pavlodar, Kazakhstan' }
-      ],
+  { charset: 'utf-8' },
+  { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+  { name: 'description', content: 'Real-time environmental monitoring for Pavlodar, Kazakhstan' }
+],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'stylesheet', href: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css' }
