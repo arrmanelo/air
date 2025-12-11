@@ -39,7 +39,7 @@ class SensorReading(Base):
     temperature = Column(Float)  # °C
     humidity = Column(Float)     # %
     pressure = Column(Float)     # hPa
-    metadata = Column(JSON)
+    extra_data = Column(JSON)  # Additional metadata (renamed from 'metadata' - reserved word)
 
 
 class Sensor(Base):
@@ -54,7 +54,7 @@ class Sensor(Base):
     sensor_type = Column(String)  # stationary, mobile
     status = Column(String, default="active")  # active, inactive, maintenance
     last_seen = Column(DateTime)
-    metadata = Column(JSON)
+    extra_data = Column(JSON)  # Additional metadata (renamed from 'metadata' - reserved word)
 
 
 class Alert(Base):
@@ -73,7 +73,7 @@ class Alert(Base):
     area = Column(String)  # district/area name
     message = Column(String)
     resolved = Column(Integer, default=0)  # 0 = active, 1 = resolved
-    metadata = Column(JSON)
+    extra_data = Column(JSON)  # Additional metadata (renamed from 'metadata' - reserved word)
 
 
 def get_db():

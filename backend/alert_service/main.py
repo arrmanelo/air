@@ -134,7 +134,7 @@ async def create_alert(
         area=alert.area,
         message=alert.message,
         resolved=0,
-        metadata=alert.metadata
+        extra_data=alert.extra_data
     )
 
     db.add(new_alert)
@@ -295,7 +295,7 @@ async def check_thresholds(
                         area="Pavlodar",  # Could be determined from coordinates
                         message=message,
                         resolved=0,
-                        metadata={"sensor_id": reading.sensor_id}
+                        extra_data={"sensor_id": reading.sensor_id}
                     )
 
                     db.add(alert)

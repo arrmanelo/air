@@ -21,7 +21,7 @@ class SensorData(BaseModel):
     temperature: Optional[float] = None
     humidity: Optional[float] = Field(None, ge=0, le=100)
     pressure: Optional[float] = None
-    metadata: Optional[Dict[str, Any]] = None
+    extra_data: Optional[Dict[str, Any]] = None
 
 
 class SensorRegistration(BaseModel):
@@ -32,7 +32,7 @@ class SensorRegistration(BaseModel):
     longitude: float = Field(..., ge=-180, le=180)
     location_description: str
     sensor_type: str = "stationary"  # stationary or mobile
-    metadata: Optional[Dict[str, Any]] = None
+    extra_data: Optional[Dict[str, Any]] = None
 
 
 class AlertCreate(BaseModel):
@@ -46,7 +46,7 @@ class AlertCreate(BaseModel):
     longitude: float
     area: Optional[str] = None
     message: str
-    metadata: Optional[Dict[str, Any]] = None
+    extra_data: Optional[Dict[str, Any]] = None
 
 
 class AQIResponse(BaseModel):

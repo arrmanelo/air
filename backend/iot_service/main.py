@@ -66,7 +66,7 @@ async def register_sensor(
         sensor_type=sensor.sensor_type,
         status="active",
         last_seen=datetime.utcnow(),
-        metadata=sensor.metadata
+        extra_data=sensor.extra_data
     )
 
     db.add(new_sensor)
@@ -85,7 +85,7 @@ async def register_sensor(
                 'sensor_type': sensor.sensor_type,
                 'status': 'active',
                 'registered_at': datetime.utcnow(),
-                'metadata': sensor.metadata or {}
+                'extra_data': sensor.extra_data or {}
             })
         except Exception as e:
             print(f"⚠️  Firestore update failed (non-critical): {e}")
@@ -123,7 +123,7 @@ async def ingest_sensor_data(
         temperature=data.temperature,
         humidity=data.humidity,
         pressure=data.pressure,
-        metadata=data.metadata
+        extra_data=data.extra_data
     )
 
     db.add(reading)
@@ -151,7 +151,7 @@ async def ingest_sensor_data(
                 'temperature': data.temperature,
                 'humidity': data.humidity,
                 'pressure': data.pressure,
-                'metadata': data.metadata or {}
+                'extra_data': data.extra_data or {}
             })
         except Exception as e:
             print(f"⚠️  Firestore update failed (non-critical): {e}")
