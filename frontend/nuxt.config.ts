@@ -11,8 +11,7 @@ export default defineNuxtConfig({
       { code: 'en', name: 'English', file: 'en.json' },
       { code: 'kz', name: 'Қазақша', file: 'kz.json' }
     ],
-    lazy: true,
-
+   
     // ТВОЯ ПРАВИЛЬНАЯ ПАПКА — "locales/"
     // Именно она есть в проекте (см. твой скрин), поэтому ставим:
     langDir: 'locales/',
