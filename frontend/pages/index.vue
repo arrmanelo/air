@@ -209,6 +209,16 @@
       </div>
     </div>
 
+    <!-- Scrolling Text Banner -->
+    <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 py-8">
+      <ScrollVelocity
+        :texts="['ЕРТІС ЖАҒАСЫНДА', 'НА БЕРЕГУ ИРТЫША', 'BY THE IRTYSH RIVER']"
+        :velocity="50"
+        className="text-white"
+        :numCopies="8"
+      />
+    </div>
+
     <!-- Footer -->
     <footer class="bg-gray-900 text-white py-12">
       <div class="container mx-auto px-4">
