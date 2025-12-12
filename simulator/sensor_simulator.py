@@ -98,6 +98,7 @@ def generate_realistic_data(sensor_location, time_of_day):
     """
     # Base pollution levels (lower at night, higher during day)
     hour = datetime.now().hour
+    month = datetime.now().month
     is_daytime = 7 <= hour <= 22
     is_rush_hour = hour in [8, 9, 17, 18, 19]
 
@@ -155,13 +156,40 @@ def generate_realistic_data(sensor_location, time_of_day):
         pm25 *= spike_factor
         print(f"   ⚠️  Spike detected at {sensor_location['name']}!")
 
-    # Temperature and humidity (realistic for Pavlodar)
-    if is_daytime:
-        temperature = random.uniform(15, 25)
-        humidity = random.uniform(30, 60)
-    else:
-        temperature = random.uniform(5, 15)
-        humidity = random.uniform(40, 70)
+    # Temperature and humidity (realistic for Pavlodar by season)
+    # Winter months (November - March): very cold
+    # Spring (April - May): cool to warm
+    # Summer (June - August): hot
+    # Fall (September - October): cool
+
+    if month in [11, 12, 1, 2, 3]:  # Winter - VERY COLD in Pavlodar
+        if is_daytime:
+            temperature = random.uniform(-8, -3)  # Day: -8°C to -3°C
+            humidity = random.uniform(70, 85)  # Higher humidity in winter
+        else:
+            temperature = random.uniform(-18, -10)  # Night: -18°C to -10°C
+            humidity = random.uniform(75, 90)
+    elif month in [4, 5]:  # Spring
+        if is_daytime:
+            temperature = random.uniform(10, 20)
+            humidity = random.uniform(40, 60)
+        else:
+            temperature = random.uniform(2, 10)
+            humidity = random.uniform(50, 70)
+    elif month in [6, 7, 8]:  # Summer
+        if is_daytime:
+            temperature = random.uniform(25, 35)  # Hot summers in Pavlodar
+            humidity = random.uniform(25, 45)
+        else:
+            temperature = random.uniform(15, 22)
+            humidity = random.uniform(35, 55)
+    else:  # Fall (September, October)
+        if is_daytime:
+            temperature = random.uniform(8, 18)
+            humidity = random.uniform(45, 65)
+        else:
+            temperature = random.uniform(-2, 8)
+            humidity = random.uniform(55, 75)
 
     return {
         "sensor_id": sensor_location["sensor_id"],
