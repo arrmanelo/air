@@ -1,91 +1,73 @@
 <template>
-  <header class="fixed top-0 left-0 right-0 z-40 glass-dark border-b border-white/10">
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100">
     <div class="container mx-auto px-4 py-4">
       <div class="flex items-center justify-between">
         <!-- Logo -->
-        <NuxtLink to="/" class="flex items-center space-x-3">
-          <div class="text-3xl">🌍</div>
+        <NuxtLink to="/" class="flex items-center gap-3 group">
+          <div class="text-3xl transition-transform group-hover:scale-110">🌍</div>
           <div>
-            <h1 class="text-xl font-bold text-gradient">EcoMonitor</h1>
-            <p class="text-xs text-gray-600">Smart Environmental Monitoring</p>
+            <h1 class="text-xl font-bold bg-gradient-to-r from-[#12ABAA] to-[#53BFBF] bg-clip-text text-transparent">
+              EcoMonitor
+            </h1>
+            <p class="text-xs text-gray-500">Умный мониторинг</p>
           </div>
         </NuxtLink>
 
         <!-- Navigation & Auth -->
-        <div class="flex items-center space-x-4">
-          <!-- Language Selector -->
-          <div class="relative" ref="langMenu">
-            <button
-              @click="showLangMenu = !showLangMenu"
-              class="flex items-center space-x-2 px-3 py-2 glass rounded-xl hover:bg-white/20 transition"
-            >
-              <span class="text-lg">{{ currentLangFlag }}</span>
-              <span class="text-sm font-semibold">{{ currentLang }}</span>
-              <span class="text-xs">▼</span>
-            </button>
-
-            <!-- Language Dropdown -->
-            <transition name="fade">
-              <div
-                v-if="showLangMenu"
-                class="absolute top-full mt-2 right-0 glass-dark rounded-xl shadow-xl overflow-hidden min-w-[150px]"
-              >
-                <button
-                  v-for="lang in languages"
-                  :key="lang.code"
-                  @click="changeLang(lang.code)"
-                  class="w-full flex items-center space-x-3 px-4 py-3 hover:bg-white/10 transition"
-                  :class="{ 'bg-white/20': currentLang === lang.code }"
-                >
-                  <span class="text-lg">{{ lang.flag }}</span>
-                  <span class="text-sm font-semibold">{{ lang.name }}</span>
-                </button>
-              </div>
-            </transition>
-          </div>
-
+        <div class="flex items-center gap-4">
           <!-- User Profile (if logged in) -->
           <div v-if="user" class="relative" ref="profileMenu">
             <button
               @click="showProfileMenu = !showProfileMenu"
-              class="flex items-center space-x-2 px-3 py-2 glass rounded-xl hover:bg-white/20 transition"
+              class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#12ABAA] to-[#53BFBF] text-white hover:shadow-lg transition-all duration-300"
             >
               <img
                 v-if="user.profile_picture"
                 :src="user.profile_picture"
                 :alt="user.name"
-                class="w-8 h-8 rounded-full"
+                class="w-8 h-8 rounded-full border-2 border-white"
               />
-              <div v-else class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
+              <div v-else class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white font-bold">
                 {{ user.name.charAt(0).toUpperCase() }}
               </div>
               <span class="text-sm font-semibold hidden md:block">{{ user.name }}</span>
-              <span class="text-xs">▼</span>
+              <svg class="w-4 h-4" :class="{ 'rotate-180': showProfileMenu }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
             </button>
 
             <!-- Profile Dropdown -->
-            <transition name="fade">
+            <transition name="dropdown">
               <div
                 v-if="showProfileMenu"
-                class="absolute top-full mt-2 right-0 glass-dark rounded-xl shadow-xl overflow-hidden min-w-[200px]"
+                class="absolute top-full mt-2 right-0 bg-white rounded-2xl shadow-2xl overflow-hidden min-w-[220px] border border-gray-100"
               >
-                <div class="px-4 py-3 border-b border-white/10">
-                  <p class="text-sm font-semibold">{{ user.name }}</p>
+                <div class="px-4 py-3 bg-gradient-to-r from-[#12ABAA]/5 to-[#53BFBF]/5 border-b border-gray-100">
+                  <p class="text-sm font-semibold text-gray-900">{{ user.name }}</p>
                   <p class="text-xs text-gray-500">{{ user.email }}</p>
                 </div>
                 <NuxtLink
                   to="/dashboard"
-                  class="flex items-center space-x-2 px-4 py-3 hover:bg-white/10 transition"
+                  class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                  @click="showProfileMenu = false"
                 >
-                  <span>📊</span>
-                  <span class="text-sm">{{ $t('nav.dashboard') }}</span>
+                  <div class="w-8 h-8 rounded-lg bg-[#12ABAA]/10 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-[#12ABAA]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                  </div>
+                  <span class="text-sm font-medium text-gray-700">Дашборд</span>
                 </NuxtLink>
                 <button
                   @click="handleLogout"
-                  class="w-full flex items-center space-x-2 px-4 py-3 hover:bg-white/10 transition text-red-500"
+                  class="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-red-600"
                 >
-                  <span>🚪</span>
-                  <span class="text-sm">{{ $t('nav.logout') }}</span>
+                  <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                  </div>
+                  <span class="text-sm font-medium">Выход</span>
                 </button>
               </div>
             </transition>
@@ -95,9 +77,9 @@
           <NuxtLink
             v-else
             to="/login"
-            class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-semibold btn-hover glow"
+            class="px-6 py-2.5 bg-gradient-to-r from-[#12ABAA] to-[#53BFBF] text-white rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300"
           >
-            {{ $t('nav.login') }}
+            Войти
           </NuxtLink>
         </div>
       </div>
@@ -108,46 +90,20 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useAuth } from '~/composables/useAuth'
-import { useI18n } from 'vue-i18n'
 
 const auth = useAuth()
-const { locale, t } = useI18n()
 
 const user = computed(() => auth.user.value)
-const showLangMenu = ref(false)
 const showProfileMenu = ref(false)
-const langMenu = ref(null)
 const profileMenu = ref(null)
-
-const languages = [
-  { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'kz', name: 'Қазақша', flag: '🇰🇿' }
-]
-
-const currentLang = computed(() => locale.value.toUpperCase())
-const currentLangFlag = computed(() => {
-  return languages.find(l => l.code === locale.value)?.flag || '🌐'
-})
-
-const changeLang = (code) => {
-  locale.value = code
-  showLangMenu.value = false
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('i18n_locale', code)
-  }
-}
 
 const handleLogout = () => {
   auth.logout()
   showProfileMenu.value = false
 }
 
-// Close menus on click outside
+// Close menu on click outside
 const handleClickOutside = (event) => {
-  if (langMenu.value && !langMenu.value.contains(event.target)) {
-    showLangMenu.value = false
-  }
   if (profileMenu.value && !profileMenu.value.contains(event.target)) {
     showProfileMenu.value = false
   }
@@ -164,14 +120,18 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s, transform 0.2s;
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.fade-enter-from,
-.fade-leave-to {
+.dropdown-enter-from {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(-8px) scale(0.95);
+}
+
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-4px) scale(0.98);
 }
 </style>
